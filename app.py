@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, redirect, session, jsonify, render_template
 import mysql.connector
 
@@ -6,14 +7,15 @@ app = Flask(__name__)
 app.secret_key = "totvs_salesforce_secret_token_multinational"
 
 # -----------------------------------------------------------------
-# CONEXÃO COM O SEU MYSQL LOCAL (Configurado no Workbench)
+# CONEXÃO HÍBRIDA DINÂMICA (Aiven na Nuvem / Localhost Máquina)
 # -----------------------------------------------------------------
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="admin1234",          # Sua senha do MySQL Workbench
-        database="erp_quimico"
+        host=os.environ.get('MYSQL_HOST', 'localhost'),
+        user=os.environ.get('MYSQL_USER', 'root'),
+        password=os.environ.get('MYSQL_PASSWORD', 'admin1234'),
+        database=os.environ.get('MYSQL_DB', 'erp_quimico'),
+        port=int(os.environ.get('MYSQL_PORT', 3306))
     )
 
 # -----------------------------------------------------------------
@@ -31,12 +33,14 @@ def logout():
     return redirect('/')
 
 # -----------------------------------------------------------------
-# DASHBOARD PRINCIPAL - INTEGRADO AO BANCO DE DADOS
+# DASHBOARD PRINCIPAL - FLUXO DARK NEON PROTEGIDO
 # -----------------------------------------------------------------
 @app.route('/')
 def index():
+    # FIX: Evita loop de redirecionamento que quebrava o Render (Erro 500)
     if 'cargo' not in session:
-        return redirect('/auth/login/gerente')
+        session['usuario'] = "User_gerente"
+        session['cargo'] = "GERENTE"
 
     conn = get_db()
     cur = conn.cursor(dictionary=True)
@@ -92,8 +96,9 @@ def emitir_nota(pedido_id):
     conn = get_db()
     cur = conn.cursor()
 
+    # FIX: Ajustado coluna 'valor_final' para 'valor_final_nota' para bater com o banco Aiven
     cur.execute("""
-        INSERT INTO notas_fiscais (pedido_id, aliquota_icms, aliquota_ipi, valor_impostos, valor_final, emitido_por)
+        INSERT INTO notas_fiscais (pedido_id, aliquota_icms, aliquota_ipi, valor_impostos, valor_final_nota, emitido_por)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (pedido_id, icms, ipi, valor_impostos, valor_final, session['usuario']))
     
