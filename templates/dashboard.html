@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus ERP - Painel de Controle</title>
+    <style>
+        /* RESET E CORES GLOBAIS CYBERPUNK */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #0b0f19; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #e2e8f0; 
+            font-size: 0.85rem; 
+            padding-bottom: 60px;
+        }
+        
+        /* TEXTOS E BORDAS NEON */
+        .text-neon-blue { color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.8); }
+        .text-neon-green { color: #39ff14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.8); }
+        .text-neon-purple { color: #bf5af2; text-shadow: 0 0 10px rgba(191, 90, 242, 0.8); }
+        .border-neon { border: 1px solid #00f2fe !important; box-shadow: 0 0 12px rgba(0, 242, 254, 0.5); }
+
+        /* HEADER DO TERMINAL */
+        .nexus-header { 
+            background-color: #060911; 
+            border-bottom: 2px solid #00f2fe; 
+            padding: 1rem 2rem; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+        }
+
+        /* GRID / ESTRUTURA DE COLUNAS */
+        .container-fluid { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .col-4 { flex: 1; min-width: 300px; }
+        .col-8 { flex: 2; min-width: 600px; }
+
+        /* PAINEL DE HIGHLIGHTS */
+        .nexus-page-header { 
+            background: linear-gradient(135deg, #0d1527 0%, #070a12 100%); 
+            border: 1px solid #1e293b; 
+            padding: 1.5rem; 
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .indicators-group { display: flex; gap: 2rem; text-align: center; }
+        .indicator-box { padding: 0 1rem; }
+        .indicator-box span { color: #64748b; font-size: 0.75rem; font-weight: bold; display: block; margin-bottom: 5px; }
+
+        /* CARDS DO SISTEMA */
+        .nexus-card { 
+            background-color: #0d1527; 
+            border: 1px solid #1e293b; 
+            border-radius: 8px; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .nexus-card__header { 
+            padding: 1rem; 
+            border-bottom: 1px solid #1e293b; 
+            background-color: #070a12; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            color: #00f2fe;
+        }
+        .nexus-card__body { padding: 1.25rem; }
+
+        /* ITEM DE ESTOQUE / SILOS */
+        .silo-item {
+            background-color: #070a12;
+            border: 1px solid #1e293b;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge-silo {
+            border: 1px solid #39ff14;
+            color: #39ff14;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+        }
+
+        /* ABAS SUPERIORES */
+        .nexus-tabs { background-color: #070a12; border-bottom: 1px solid #1e293b; display: flex; }
+        .nexus-tab-link { padding: 1rem 1.5rem; color: #94a3b8; text-decoration: none; font-weight: bold; border-bottom: 3px solid transparent; }
+        .nexus-tab-link.active { color: #00f2fe; border-bottom-color: #00f2fe; text-shadow: 0 0 5px #00f2fe; }
+
+        /* BLOCOS INTERNOS DO PEDIDO */
+        .order-box {
+            background-color: #070a12;
+            border: 1px solid #1e293b;
+            padding: 1.25rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .grid-4-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .meta-label { color: #64748b; font-size: 0.75rem; display: block; margin-bottom: 3px; }
+        .meta-value { font-weight: bold; color: #ffffff; display: block; }
+
+        /* FORMULÁRIOS INTERNOS */
+        .form-neon-container {
+            background-color: #0a1120;
+            border: 1px solid #00f2fe;
+            box-shadow: 0 0 10px rgba(0,242,254,0.2);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+        .form-flex { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .input-dark {
+            background-color: #070a12;
+            border: 1px solid #334155;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .input-dark:focus { border-color: #00f2fe; outline: none; box-shadow: 0 0 8px #00f2fe; }
+        
+        /* BOTÕES EM GLOW */
+        .btn-neon-action {
+            background-color: transparent;
+            border: 1px solid #00f2fe;
+            color: #00f2fe;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(0,242,254,0.3);
+        }
+        .btn-neon-action:hover { background-color: #00f2fe; color: #000; box-shadow: 0 0 15px #00f2fe; }
+
+        /* BARRA INFERIOR DE PERMISSÕES */
+        .perm-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #060911;
+            border: 1px solid #1e293b;
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        .btn-perm { text-decoration: none; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: 1px solid #334155; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. BARRA DE NAVEGAÇÃO DE TOPO -->
+    <header class="nexus-header">
+        <div>
+            <h2 class="text-neon-blue" style="letter-spacing: 1px;">NEXUS.ERP</h2>
+            <span style="color: #64748b; font-size: 0.75rem;">Terminal Operacional Industrial Multinacional</span>
+        </div>
+        <div style="text-align: right;">
+            <span>Sessão Ativa: <b class="text-neon-blue">{{ usuario }}</b></span>
+            <span style="margin-left: 15px; border: 1px solid #bf5af2; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;" class="text-neon-purple">DIVISÃO: {{ cargo }}</span>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        
+        <!-- 2. PAINEL DE HIGHLIGHTS DAS PENDÊNCIAS -->
+        <div class="nexus-page-header">
+            <div>
+                <span style="color: #64748b; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">GERÊNCIA GERAL</span>
+                <h3 style="color: #ffffff; font-weight: 500; margin-top: 3px;">Monitor de Fluxo de Insumos</h3>
+            </div>
+            <div class="indicators-group">
+                <div class="indicator-box"><span>PEND. ADMINISTRATIVA</span><strong class="text-neon-blue" style="font-size: 1.5rem;">{{ adm }}</strong></div>
+                <div class="indicator-box" style="border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;"><span>AGUARDANDO FISCAL</span><strong style="font-size: 1.5rem; color: #ff453a;">{{ fiscal }}</strong></div>
+                <div class="indicator-box"><span>TRIAGEM LOGÍSTICA</span><strong class="text-neon-green" style="font-size: 1.5rem;">{{ log }}</strong></div>
+            </div>
+        </div>
+
+        <!-- 3. DUAS COLUNAS PRINCIPAIS -->
+        <div class="row">
+            
+            <!-- COLUNA ESQUERDA: MONITOR DOS SILOS -->
+            <div class="col-4">
+                <div class="nexus-card">
+                    <div class="nexus-card__header">🧪 Silos Químicos (Estoque Real-Time)</div>
+                    <div class="nexus-card__body">
+                        {% for prod in estoque %}
+                        <div class="silo-item">
+                            <div>
+                                <span style="font-weight: bold; color: #ffffff; display: block; font-size: 0.9rem;">{{ prod.nome }}</span>
+                                <span style="color: #64748b; font-size: 0.75rem;">{{ prod.formula_quimica }}</span>
+                            </div>
+                            <div class="badge-silo">{{ prod.quantidade_estoque }} T</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: CARTEIRA DE PEDIDOS E FLUXO -->
+            <div class="col-8">
+                <div class="nexus-card">
+                    <div class="nexus-tabs">
+                        <a href="#" class="nexus-tab-link active">Detalhes Operacionais</a>
+                        <a href="#" class="nexus-tab-link">Logística de Rotas</a>
+                    </div>
+                    
+                    <div class="nexus-card__body">
+                        <h4 style="color: #ffffff; margin-bottom: 1.5rem; font-weight: 500;">Carteira de Pedidos Ativos</h4>
+                        
+                        {% for p in pedidos %}
+                        <div class="order-box">
+                            <div class="grid-4-columns">
+                                <div><span class="meta-label">Order Line ID</span><span class="meta-value text-neon-blue font-monospace">#510071-000{{ p.id }}</span></div>
+                                <div><span class="meta-label">Vendedor Responsável</span><span class="meta-value">{{ p.vendedor }}</span></div>
+                                <div><span class="meta-label">Valor Base Líquido</span><span class="meta-value text-neon-green">R$ {{ p.valor_total }}</span></div>
+                                <div><span class="meta-label">Fase Cadastral</span><span class="meta-value text-neon-purple">{{ p.status }}</span></div>
+                            </div>
+                            
+                            <!-- FLUXO DA ÁREA FISCAL (IMPOSTO MANUAL) -->
+                            {% if p.status == 'PEND_FISCAL' %}
+                            <div class="form-neon-container">
+                                <span style="color: #00f2fe; font-weight: bold; display: block; margin-bottom: 10px; font-size: 0.8rem;">⚙️ Atualização Manual de Impostos de Faturamento</span>
+                                <form action="/faturamento/emitir/{{ p.id }}" method="POST" class="form-flex">
+                                    <input type="hidden" name="valor_total" value="{{ p.valor_total }}">
+                                    
+                                    <label style="color: #94a3b8;">ICMS:</label>
+                                    <input type="number" step="0.1" name="icms" class="input-dark" value="18.0" style="width: 80px;" required> <span style="color: #64748b;">%</span>
+                                    
+                                    <label style="color: #94a3b8; margin-left: 10px;">IPI:</label>
+                                    <input type="number" step="0.1" name="ipi" class="input-dark" value="5.0" style="width: 80px;" required> <span style="color: #64748b;">%</span>
+                                    
+                                    <button type="submit" class="btn-neon-action" style="margin-left: auto;">Calcular e Emitir Nota</button>
+                                </form>
+                            </div>
+
+                            <!-- MÓDULO LOGÍSTICO COMPLETO (ATRELAR CARGA, ROTA, PESO E SEGURO) -->
+                            {% elif p.status == 'PEND_LOG' %}
+                            <div class="form-neon-container" style="border-color: #39ff14; box-shadow: 0 0 10px rgba(57,255,20,0.15);">
+                                <span style="color: #39ff14; font-weight: bold; display: block; margin-bottom: 12px; font-size: 0.8rem;">🚛 Despacho Técnico de Frota e Carga</span>
+                                <form action="/logistica/despachar/{{ p.id }}" method="POST">
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <input type="text" name="empresa" placeholder="Transportadora" class="input-dark" required>
+                                        <input type="text" name="placa" placeholder="Placa" class="input-dark" style="width: 130px;" required>
+                                        <input type="text" name="rota" placeholder="Rota de Destino" class="input-dark" required>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="number" name="peso" placeholder="Peso (KG)" class="input-dark" style="width: 140px;" required>
+                                        <input type="text" name="tipo_carga" placeholder="Classe de Composto" class="input-dark" required>
+                                        
+                                        <label style="color: #64748b; font-size: 0.75rem; margin-left: 10px; display: flex; align-items: center; gap: 5px; min-width: 110px;">
+                                            <input type="checkbox" name="seguro" value="1" checked> Seguro Ativo
+                                        </label>
+                                        
+                                        <button type="submit" class="btn-neon-action" style="margin-left: auto; border-color: #39ff14; color: #39ff14; box-shadow: 0 0 8px rgba(57,255,20,0.2);">Despachar Carga</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- OPERAÇÃO TOTALMENTE CONCLUÍDA -->
+                            {% else %}
+                            <div style="margin-top: 10px; color: #64748b; font-size: 0.8rem;">✔️ Ordem finalizada. Carga enviada e silos deduzidos em Tempo Real.</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SIMULADOR DE PERMISSÕES INFERIOR -->
+    <div class="perm-bar">
+        <span style="color: #64748b; font-size: 0.75rem;">Hierarquia Operacional:</span>
+        <a href="/auth/login/vendedor" class="btn-perm" style="color: #ffb936;">Vendedor Menor</a>
+        <a href="/auth/login/fiscal" class="btn-perm" style="color: #ff453a;">Auditor Fiscal</a>
+        <a href="/auth/login/logistica" class="btn-perm" style="color: #00f2fe;">Logística</a>
+        <a href="/auth/login/gerente" class="btn-perm" style="color: #39ff14;">Diretor Geral (Gerente)</a>
+    </div>
+
+</body>
+</html>
